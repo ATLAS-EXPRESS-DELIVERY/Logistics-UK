@@ -240,10 +240,17 @@ table{max-width:100%;}
   font-weight:700;
   letter-spacing:.12em;
   text-transform:uppercase;
-  transition:background .2s,transform .2s;
+  transition:transform .2s;
   border-radius:10px;
+  animation:btnColorCycle 4.5s ease-in-out infinite;
 }
-.btn-primary:hover{background:var(--gold2);transform:translateY(-1px);}
+@keyframes btnColorCycle{
+  0%{background:#ff6b6b;color:#fff;}
+  33%{background:#4a7fe0;color:#fff;}
+  66%{background:#ffffff;color:#1a1a1a;}
+  100%{background:#ff6b6b;color:#fff;}
+}
+.btn-primary:hover{transform:translateY(-1px);animation-play-state:paused;}
 .btn-primary svg{width:14px;height:14px;transition:transform .2s;}
 .btn-primary:hover svg{transform:translateX(3px);}
 .hero-controls{
@@ -1702,7 +1709,7 @@ body{top:0 !important;}
   <div class="nav-address" id="nav-address">Unit 12 Heron Avenue, Wickford, Essex SS11 8DL</div>
   <ul class="nav-links" id="nav-links">
     <li><a href="#" onclick="showPage('home');closeNav();return false;">Home</a></li>
-    <li><a href="#" onclick="showPage('track');closeNav();return false;">Track</a></li>
+    <li><a href="https://atlas-express-delivery.github.io/Service/">Track</a></li>
     <li><a href="#" onclick="showPage('about');closeNav();return false;">About</a></li>
     <li><a href="#" onclick="showPage('services');closeNav();return false;">Services</a></li>
     <li><a href="#" onclick="showPage('fleet');closeNav();return false;">Fleet</a></li>
@@ -1734,7 +1741,7 @@ body{top:0 !important;}
         <div class="slide-eyebrow">Beyond Borders, Beyond Expectation.</div>
         <h1>Elevating the World of Logistics.</h1>
         <p>The world's largest retailers and brands rely on ATLAS EXPRESS SERVICE to move fast, at scale, with absolute precision.</p>
-        <a href="#" class="btn-primary" onclick="showPage('track');return false;">
+        <a href="https://atlas-express-delivery.github.io/Service/" class="btn-primary">
           Track Shipment
           <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </a>
@@ -1745,8 +1752,8 @@ body{top:0 !important;}
         <div class="slide-eyebrow">Intelligent Networks</div>
         <h1>Logistics Networks Designed to Grow.</h1>
         <p>Technology-powered, omnichannel logistics programs built for resilience, speed, and every scale of business.</p>
-        <a href="#" class="btn-primary" onclick="showPage('services');return false;">
-          Our Services
+        <a href="https://atlas-express-delivery.github.io/Service/" class="btn-primary">
+          Track Shipment
           <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </a>
       </div>
@@ -1756,8 +1763,8 @@ body{top:0 !important;}
         <div class="slide-eyebrow">Air · Road · Ocean</div>
         <h1>Efficient &amp; Reliable Transportation.</h1>
         <p>Move fast at scale — air, road, ocean, or international freight. We are the singular partner you need.</p>
-        <a href="#" class="btn-primary" onclick="showPage('appointment');return false;">
-          Book Appointment
+        <a href="https://atlas-express-delivery.github.io/Service/" class="btn-primary">
+          Track Shipment
           <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </a>
       </div>
@@ -2115,7 +2122,7 @@ body{top:0 !important;}
       <p class="section-body">Enter your tracking reference to get live status updates on your consignment.</p>
       <div class="track-box">
         <input type="text" id="track-input" placeholder="e.g. VGL-2024-78432"/>
-        <button onclick="doTrack()">Track</button>
+        <button onclick="window.location.href='https://atlas-express-delivery.github.io/Service/'">Track</button>
       </div>
       <div class="track-result" id="track-result">
         <div class="track-status" id="track-status"></div>
@@ -2675,7 +2682,7 @@ body{top:0 !important;}
         <li><a href="#" onclick="showPage('services');return false;">Services</a></li>
         <li><a href="#" onclick="showPage('fleet');return false;">Fleet</a></li>
         <li><a href="#" onclick="showPage('gallery');return false;">Gallery</a></li>
-        <li><a href="#" onclick="showPage('track');return false;">Track Shipment</a></li>
+        <li><a href="https://atlas-express-delivery.github.io/Service/">Track Shipment</a></li>
         <li><a href="#" onclick="showPage('appointment');return false;">Book Appointment</a></li>
       </ul>
     </div>
