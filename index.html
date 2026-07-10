@@ -1910,7 +1910,7 @@ body.splash-active { overflow: hidden; }
         <p>Enter your tracking number to get real-time updates.</p>
         <div class="field-group">
           <label>Tracking Number</label>
-          <input type="text" id="trackingInput" placeholder="e.g. GD-29485-2026" autocomplete="off">
+          <input type="text" id="trackingInput" placeholder="e.g. ATEX-2026-48213" autocomplete="off">
         </div>
         <div class="field-group">
           <label>Reference (Optional)</label>
@@ -2706,8 +2706,8 @@ body.splash-active { overflow: hidden; }
   setInterval(updateClock, 1000);
 
   /* ── LIVE TRACKING (connected to Atlas Admin via JSONBin) ─ */
-  const JSONBIN_BIN_ID     = '6a4c8196da38895dfe38dad5';
-  const JSONBIN_ACCESS_KEY = '$2a$10$VhKQ637EoLR/qmEAR2Z.XuaWAGubH7O4BSstH1qXGbGCnkYLMkkz.';
+  const JSONBIN_BIN_ID     = '6a504daaf5f4af5e297a64c8';
+  const JSONBIN_ACCESS_KEY = '$2a$10$zfkfl91UUSj1g.DY0A.dBeIA1iGX2Lc3OpBvoIUgKjTw8uQP9oVuu';
   const JSONBIN_BASE       = 'https://api.jsonbin.io/v3/b/' + JSONBIN_BIN_ID;
 
   // Same 9-stage journey used by the admin portal, so both sides always match
@@ -2730,10 +2730,27 @@ body.splash-active { overflow: hidden; }
   }
 
   async function fetchShipments() {
-    const r = await fetch(JSONBIN_BASE + '/latest', {
-      headers: { 'X-Access-Key': JSONBIN_ACCESS_KEY }
-    });
-    if (!r.ok) throw new Error('Network error: ' + r.status);
+    let r;
+    try {
+      r = await fetch(JSONBIN_BASE + '/latest', {
+        headers: { 'X-Access-Key': JSONBIN_ACCESS_KEY }
+      });
+    } catch (networkErr) {
+      // fetch() itself threw — actual network/CORS/offline failure
+      console.error('[Tracking] Network-level failure reaching JSONBin:', networkErr);
+      const e = new Error('network');
+      e.kind = 'network';
+      throw e;
+    }
+    if (!r.ok) {
+      // The request reached JSONBin but was rejected — almost always a key/permissions problem
+      const bodyText = await r.text().catch(() => '');
+      console.error('[Tracking] JSONBin rejected the request. HTTP ' + r.status + '. Body:', bodyText);
+      const e = new Error('http-' + r.status);
+      e.kind = (r.status === 401 || r.status === 403) ? 'auth' : (r.status === 404 ? 'notfound' : 'server');
+      e.status = r.status;
+      throw e;
+    }
     const d = await r.json();
     return (d.record && d.record.shipments) || {};
   }
@@ -2770,7 +2787,9 @@ body.splash-active { overflow: hidden; }
       animateCount(document.getElementById('dashDelivered'), delivered);
       // Fleet size isn't tracked in shipment data, so it's left as-is.
     } catch (e) {
-      // Keep whatever was last shown if the fetch fails; fail silently on the public page.
+      // Keep whatever was last shown if the fetch fails; fail silently on the public page,
+      // but still log so the real cause (e.g. auth) is visible in devtools.
+      console.error('[Dashboard] Failed to refresh live stats:', e);
     }
   }
 
@@ -2811,7 +2830,14 @@ body.splash-active { overflow: hidden; }
       section.style.display = 'block';
       section.scrollIntoView({ behavior: 'smooth', block: 'start' });
     } catch (e) {
-      err.textContent = 'Could not reach the tracking service right now. Please try again shortly.';
+      if (e && e.kind === 'auth') {
+        // This is a config problem (bad/expired access key), not a "no such shipment" problem —
+        // surface it distinctly so it doesn't get mistaken for a real "not found".
+        err.textContent = 'Tracking service is temporarily unavailable (connection not authorized). Please contact support.';
+        console.error('[Tracking] Access key rejected by JSONBin — verify JSONBIN_ACCESS_KEY on the front end still matches an active Access Key scoped to bin ' + JSONBIN_BIN_ID + '.');
+      } else {
+        err.textContent = 'Could not reach the tracking service right now. Please try again shortly.';
+      }
       err.style.display = 'flex';
       section.style.display = 'none';
     } finally {
