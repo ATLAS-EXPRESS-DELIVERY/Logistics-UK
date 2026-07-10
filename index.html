@@ -806,10 +806,55 @@ body.drawer-open { overflow: hidden; }
   font-family: var(--font-head); font-size: 1rem; font-weight: 700;
   color: var(--navy); letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 20px;
 }
+
+/* ── ANIMATED ROUTE PROGRESS BAR ─────────────────────── */
+.route-progress { position: relative; padding: 30px 14px 20px; margin-bottom: 8px; }
+.route-progress .rp-track {
+  position: relative; height: 6px; background: var(--grey);
+  border-radius: 3px; margin: 0 6px;
+}
+.route-progress .rp-fill {
+  position: absolute; top: 0; left: 0; height: 100%; width: 0%;
+  background: linear-gradient(90deg, var(--green), var(--gold));
+  border-radius: 3px;
+  transition: width 1.2s cubic-bezier(.4,0,.2,1);
+}
+.route-progress .rp-endpoint {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 15px; height: 15px; border-radius: 50%;
+  background: var(--white); border: 3px solid var(--green); z-index: 2;
+}
+.route-progress .rp-endpoint.start { left: -1px; }
+.route-progress .rp-endpoint.end {
+  right: -1px; border-color: var(--grey);
+  transition: border-color 1.2s ease;
+}
+.route-progress .rp-endpoint.end.reached { border-color: var(--gold); }
+.route-progress .rp-vehicle {
+  position: absolute; top: 50%; left: 0%;
+  transform: translate(-50%, -50%); font-size: 1.55rem;
+  transition: left 1.2s cubic-bezier(.4,0,.2,1);
+  filter: drop-shadow(0 2px 5px rgba(0,0,0,0.28));
+  z-index: 3;
+}
+.route-progress .rp-vehicle .rp-pct {
+  position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%);
+  font-size: 0.68rem; font-weight: 700; color: var(--navy);
+  background: var(--white); border: 1.5px solid var(--grey);
+  padding: 2px 9px; border-radius: 20px; white-space: nowrap;
+  box-shadow: var(--shadow);
+}
+.route-progress .rp-labels {
+  display: flex; justify-content: space-between; margin-top: 14px;
+  font-size: 0.76rem; color: var(--mid); font-weight: 600;
+}
+.route-progress .rp-labels strong { color: var(--dark); font-weight: 700; }
+
 .timeline-steps { display: flex; flex-direction: column; gap: 0; }
 .tl-step {
   display: flex; gap: 16px; position: relative;
   padding-bottom: 20px;
+  opacity: 0; animation: tlIn 0.5s ease forwards;
 }
 .tl-step:last-child { padding-bottom: 0; }
 .tl-left { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
@@ -820,12 +865,19 @@ body.drawer-open { overflow: hidden; }
 }
 .tl-dot.done { background: var(--green); border-color: var(--green); }
 .tl-dot.active { background: var(--gold); border-color: var(--gold); box-shadow: 0 0 0 3px rgba(79,168,224,0.2); }
-.tl-line { width: 2px; flex: 1; background: var(--grey); min-height: 24px; }
-.tl-line.done { background: var(--green); }
+.tl-dot.active::after {
+  content: ''; position: absolute; inset: -6px; border-radius: 50%;
+  border: 2px solid var(--gold); animation: tlPulse 1.6s infinite;
+}
+.tl-line { width: 2px; flex: 1; background: var(--grey); min-height: 24px; position: relative; overflow: hidden; }
+.tl-line-fill { position: absolute; top: 0; left: 0; width: 100%; height: 0%; background: var(--green); transition: height 0.7s ease 0.15s; }
+.tl-line.done .tl-line-fill { height: 100%; }
 .tl-step:last-child .tl-line { display: none; }
 .tl-content { padding-top: 0; }
 .tl-content strong { font-size: 0.88rem; font-weight: 600; color: var(--dark); display: block; line-height: 1.3; }
 .tl-content span { font-size: 0.78rem; color: var(--mid); }
+@keyframes tlIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes tlPulse { 0% { transform: scale(0.6); opacity: 0.85; } 100% { transform: scale(1.7); opacity: 0; } }
 
 /* ── GOOGLE TRANSLATE (hidden engine, custom UI drives it) ── */
 #google_translate_element { display: none !important; }
@@ -2115,6 +2167,21 @@ body.splash-active { overflow: hidden; }
       </div>
     </div>
     <div class="result-grid" id="resGrid"></div>
+    <div class="route-progress" id="resRoute">
+      <div class="rp-track">
+        <div class="rp-fill" id="rpFill"></div>
+        <div class="rp-endpoint start"></div>
+        <div class="rp-endpoint end" id="rpEndEnd"></div>
+        <div class="rp-vehicle" id="rpVehicle">
+          <div class="rp-pct" id="rpPct">0%</div>
+          <span id="rpVehicleIcon">📦</span>
+        </div>
+      </div>
+      <div class="rp-labels">
+        <span><strong id="rpOrigin">—</strong></span>
+        <span><strong id="rpDestination">—</strong></span>
+      </div>
+    </div>
     <div class="timeline">
       <h4>Shipment History</h4>
       <div class="timeline-steps" id="resTimeline"></div>
@@ -2671,6 +2738,45 @@ body.splash-active { overflow: hidden; }
     return (d.record && d.record.shipments) || {};
   }
 
+  /* ── LIVE DASHBOARD STATS (real counts pulled from the bin) ── */
+  function animateCount(el, target) {
+    if (!el) return;
+    const start = parseInt(el.dataset.raw || '0', 10) || 0;
+    const dur = 800;
+    const t0 = performance.now();
+    function step(t) {
+      const p = Math.min(1, (t - t0) / dur);
+      const val = Math.round(start + (target - start) * p);
+      el.textContent = val.toLocaleString();
+      if (p < 1) requestAnimationFrame(step);
+      else el.dataset.raw = String(target);
+    }
+    requestAnimationFrame(step);
+  }
+
+  async function updateLiveDashboard() {
+    try {
+      const shipments = await fetchShipments();
+      const all = Object.values(shipments);
+      const delivered = all.filter(s => s.status === 'Delivered').length;
+      const inTransit = all.filter(s => {
+        const i = STAGES.indexOf(s.status);
+        return i > 0 && i < STAGES.length - 1;
+      }).length;
+      const active = all.length - delivered;
+
+      animateCount(document.getElementById('dashActive'), active);
+      animateCount(document.getElementById('dashTransit'), inTransit);
+      animateCount(document.getElementById('dashDelivered'), delivered);
+      // Fleet size isn't tracked in shipment data, so it's left as-is.
+    } catch (e) {
+      // Keep whatever was last shown if the fetch fails; fail silently on the public page.
+    }
+  }
+
+  updateLiveDashboard();
+  setInterval(updateLiveDashboard, 30000);
+
   async function trackShipment() {
     const idRaw   = document.getElementById('trackingInput').value.trim();
     const err     = document.getElementById('trackError');
@@ -2714,6 +2820,45 @@ body.splash-active { overflow: hidden; }
     }
   }
 
+  function getVehicleIcon(service) {
+    const sv = (service || '').toLowerCase();
+    if (sv.includes('air')) return '✈️';
+    if (sv.includes('ocean') || sv.includes('sea')) return '🚢';
+    if (sv.includes('rail')) return '🚆';
+    if (sv.includes('road')) return '🚚';
+    if (sv.includes('same-day') || sv.includes('same day')) return '🏍️';
+    if (sv.includes('white glove')) return '🚐';
+    return '📦';
+  }
+
+  function renderRouteProgress(s, curIdx) {
+    const pct = s.status === 'Delivered'
+      ? 100
+      : curIdx > 0
+        ? Math.round((curIdx / (STAGES.length - 1)) * 100)
+        : 4; // a sliver of progress once a shipment exists, even at "Shipment Created"
+
+    document.getElementById('rpOrigin').textContent = s.origin || '—';
+    document.getElementById('rpDestination').textContent = s.destination || '—';
+    document.getElementById('rpVehicleIcon').textContent = getVehicleIcon(s.service);
+    document.getElementById('rpPct').textContent = pct + '%';
+
+    const endEl = document.getElementById('rpEndEnd');
+    endEl.classList.toggle('reached', pct >= 100);
+
+    // Reset to 0 first, then animate to the real value on the next frame
+    const fill = document.getElementById('rpFill');
+    const vehicle = document.getElementById('rpVehicle');
+    fill.style.width = '0%';
+    vehicle.style.left = '0%';
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        fill.style.width = pct + '%';
+        vehicle.style.left = pct + '%';
+      });
+    });
+  }
+
   function renderTrackedShipment(s) {
     document.getElementById('resId').textContent = s.id;
     document.getElementById('resStatus').textContent = s.status || 'In Transit';
@@ -2737,17 +2882,23 @@ body.splash-active { overflow: hidden; }
     if (!stageTimes['Shipment Created']) stageTimes['Shipment Created'] = s.created;
 
     const curIdx = STAGES.indexOf(s.status);
+
+    renderRouteProgress(s, curIdx);
+
     const tl = document.getElementById('resTimeline');
     tl.innerHTML = STAGES.map((stage, i) => {
       const done   = curIdx >= 0 && i < curIdx;
       const active = i === curIdx;
       const state  = active ? 'active' : (done ? 'done' : 'pending');
       const time   = stageTimes[stage];
+      const fillIt = done || active;
       return `
-      <div class="tl-step">
+      <div class="tl-step" style="animation-delay:${i * 70}ms;">
         <div class="tl-left">
           <div class="tl-dot ${state}"></div>
-          <div class="tl-line ${done || active ? 'done' : ''}"></div>
+          <div class="tl-line" data-fill="${fillIt ? '1' : '0'}">
+            <div class="tl-line-fill"></div>
+          </div>
         </div>
         <div class="tl-content">
           <strong>${esc(stage)}</strong>
@@ -2756,6 +2907,13 @@ body.splash-active { overflow: hidden; }
       </div>
     `;
     }).join('');
+
+    // Trigger the line-fill transitions after the elements exist in the DOM
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        tl.querySelectorAll('.tl-line[data-fill="1"]').forEach(el => el.classList.add('done'));
+      });
+    });
   }
 
   document.getElementById('trackingInput').addEventListener('keydown', e => {
