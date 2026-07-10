@@ -859,11 +859,16 @@ body.drawer-open { overflow: hidden; }
 .tl-step:last-child { padding-bottom: 0; }
 .tl-left { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
 .tl-dot {
-  width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0;
+  width: 15px; height: 15px; border-radius: 50%; flex-shrink: 0;
   border: 2px solid var(--grey); background: var(--white);
   position: relative; z-index: 1;
 }
 .tl-dot.done { background: var(--green); border-color: var(--green); }
+.tl-dot.done::after {
+  content: '✓'; position: absolute; inset: 0; display: flex;
+  align-items: center; justify-content: center;
+  color: #fff; font-size: 9px; font-weight: 800; line-height: 1;
+}
 .tl-dot.active { background: var(--gold); border-color: var(--gold); box-shadow: 0 0 0 3px rgba(79,168,224,0.2); }
 .tl-dot.active::after {
   content: ''; position: absolute; inset: -6px; border-radius: 50%;
@@ -878,6 +883,98 @@ body.drawer-open { overflow: hidden; }
 .tl-content span { font-size: 0.78rem; color: var(--mid); }
 @keyframes tlIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
 @keyframes tlPulse { 0% { transform: scale(0.6); opacity: 0.85; } 100% { transform: scale(1.7); opacity: 0; } }
+
+/* ── SETTLEMENT: AMOUNT DUE / SIGNATURE / STAMP ──────── */
+.settlement { border-top: 1.5px solid var(--grey); margin-top: 32px; padding-top: 28px; }
+.settlement h4 {
+  font-family: var(--font-head); font-size: 1rem; font-weight: 700;
+  color: var(--navy); letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 20px;
+}
+.settlement-grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 24px; align-items: stretch; }
+@media (max-width: 700px) { .settlement-grid { grid-template-columns: 1fr; } }
+
+.amount-card {
+  background: var(--offwhite); border: 1.5px solid var(--grey); border-radius: 6px;
+  padding: 22px 24px;
+}
+.amount-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; font-size: 0.9rem; }
+.amount-row + .amount-row { border-top: 1px dashed var(--grey); }
+.amount-row label { color: var(--mid); font-weight: 600; }
+.amount-row strong { color: var(--dark); font-weight: 700; }
+.amount-row.due strong { color: var(--red); font-size: 1.1rem; }
+.amount-row.paid strong { color: var(--green); }
+.amount-status-pill {
+  display: inline-block; padding: 3px 12px; border-radius: 30px;
+  font-size: 0.68rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+}
+.amount-status-pill.unpaid { background: rgba(230,57,70,0.1); color: var(--red); border: 1.5px solid rgba(230,57,70,0.3); }
+.amount-status-pill.partial { background: rgba(79,168,224,0.12); color: var(--navy2); border: 1.5px solid rgba(79,168,224,0.35); }
+.amount-status-pill.paid { background: rgba(0,168,107,0.1); color: var(--green); border: 1.5px solid rgba(0,168,107,0.3); }
+.amount-note {
+  margin-top: 14px; padding-top: 14px; border-top: 1.5px solid var(--grey);
+}
+.amount-note label {
+  display: block; font-size: 0.72rem; font-weight: 700; color: var(--mid);
+  text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px;
+}
+.amount-note p {
+  font-size: 0.86rem; color: var(--dark); line-height: 1.5;
+  min-height: 2.4em;
+}
+.amount-note p.empty { color: var(--mid); font-style: italic; }
+
+.sign-stamp-card {
+  display: flex; flex-direction: column; justify-content: space-between;
+  gap: 18px; padding: 22px 20px; border: 1.5px solid var(--grey); border-radius: 6px;
+}
+.agent-sign { text-align: center; }
+.agent-sign .sig-name {
+  font-family: 'Brush Script MT', cursive; font-size: 1.7rem; color: var(--navy);
+  line-height: 1.1;
+}
+.agent-sign .sig-rule { border-top: 1.5px solid var(--mid); margin: 6px auto 0; width: 80%; }
+.agent-sign .sig-label {
+  font-size: 0.68rem; color: var(--mid); text-transform: uppercase;
+  letter-spacing: 0.08em; margin-top: 6px; font-weight: 600;
+}
+
+.goods-stamp-wrap { display: flex; justify-content: center; }
+.goods-stamp {
+  width: 108px; height: 108px; border-radius: 50%;
+  border: 3px solid var(--green); color: var(--green);
+  display: flex; align-items: center; justify-content: center;
+  transform: rotate(-12deg); opacity: 0.9;
+  position: relative;
+}
+.goods-stamp::before {
+  content: ''; position: absolute; inset: 6px; border-radius: 50%;
+  border: 1.5px solid var(--green);
+}
+.goods-stamp-text {
+  font-family: var(--font-head); font-weight: 800; font-size: 0.88rem;
+  letter-spacing: 0.03em; text-align: center; line-height: 1.25;
+  text-transform: uppercase;
+}
+.goods-stamp-text small { display: block; font-size: 0.58rem; font-weight: 700; letter-spacing: 0.1em; margin-top: 3px; }
+
+/* ── DESTINATION MAP ─────────────────────────────────── */
+.dest-map { border-top: 1.5px solid var(--grey); margin-top: 28px; padding-top: 28px; }
+.dest-map h4 {
+  font-family: var(--font-head); font-size: 1rem; font-weight: 700;
+  color: var(--navy); letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 6px;
+}
+.dest-map .dest-map-label { font-size: 0.85rem; color: var(--mid); margin-bottom: 14px; }
+.dest-map .dest-map-label strong { color: var(--dark); }
+.dest-map-frame {
+  width: 100%; height: 320px; border-radius: 6px; overflow: hidden;
+  border: 1.5px solid var(--grey); background: var(--offwhite);
+  position: relative;
+}
+.dest-map-frame iframe { width: 100%; height: 100%; border: 0; display: block; }
+.dest-map-loading {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  color: var(--mid); font-size: 0.85rem; font-weight: 600;
+}
 
 /* ── GOOGLE TRANSLATE (hidden engine, custom UI drives it) ── */
 #google_translate_element { display: none !important; }
@@ -1565,7 +1662,7 @@ body.splash-active { overflow: hidden; }
     <div class="splash-ring-mid"></div>
     <div class="splash-ring-inner"></div>
     <span class="splash-globe-emoji">🌏</span>
-    <span class="splash-gd-badge">GD</span>
+    <span class="splash-gd-badge">ATLAS</span>
   </div>
 
   <!-- Text content -->
@@ -2186,6 +2283,55 @@ body.splash-active { overflow: hidden; }
       <h4>Shipment History</h4>
       <div class="timeline-steps" id="resTimeline"></div>
     </div>
+
+    <div class="settlement">
+      <h4>Payment Settlement</h4>
+      <div class="settlement-grid">
+        <div class="amount-card">
+          <div class="amount-row">
+            <label>Amount To Be Paid</label>
+            <strong id="resAmountTotal">—</strong>
+          </div>
+          <div class="amount-row paid">
+            <label>Amount Paid</label>
+            <strong id="resAmountPaid">—</strong>
+          </div>
+          <div class="amount-row due">
+            <label>Balance Due</label>
+            <strong id="resAmountBalance">—</strong>
+          </div>
+          <div class="amount-row">
+            <label>Status</label>
+            <span class="amount-status-pill" id="resPaymentStatus">—</span>
+          </div>
+          <div class="amount-note">
+            <label>Note — What This Payment Covers</label>
+            <p id="resPaymentNote" class="empty">No note has been added for this shipment yet.</p>
+          </div>
+        </div>
+        <div class="sign-stamp-card">
+          <div class="agent-sign">
+            <div class="sig-name">J. Franklin</div>
+            <div class="sig-rule"></div>
+            <div class="sig-label">Authorized Agent Signature</div>
+          </div>
+          <div class="goods-stamp-wrap">
+            <div class="goods-stamp">
+              <div class="goods-stamp-text">Goods<br>Intact<small>Verified</small></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dest-map">
+      <h4>Destination</h4>
+      <div class="dest-map-label">Shipping to <strong id="resDestMapLabel">—</strong></div>
+      <div class="dest-map-frame">
+        <div class="dest-map-loading" id="destMapLoading">Loading map…</div>
+        <iframe id="destMapIframe" loading="lazy" referrerpolicy="no-referrer-when-downgrade" style="display:none;"></iframe>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -2728,6 +2874,15 @@ body.splash-active { overflow: hidden; }
     const d = new Date(iso + (String(iso).includes('T') ? '' : 'T00:00:00'));
     return d.toLocaleDateString(undefined, { month:'long', day:'numeric', year:'numeric' });
   }
+  function parseMoney(str) {
+    if (str == null) return null;
+    const n = parseFloat(String(str).replace(/[^0-9.\-]/g, ''));
+    return isNaN(n) ? null : n;
+  }
+  function fmtMoney(n) {
+    if (n == null || isNaN(n)) return 'N/A';
+    return '£' + n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
 
   async function fetchShipments() {
     let r;
@@ -2940,6 +3095,65 @@ body.splash-active { overflow: hidden; }
         tl.querySelectorAll('.tl-line[data-fill="1"]').forEach(el => el.classList.add('done'));
       });
     });
+
+    renderSettlement(s);
+    renderDestinationMap(s);
+  }
+
+  function renderSettlement(s) {
+    const total   = parseMoney(s.amountToPay);
+    const paid    = parseMoney(s.amountPaid) || 0;
+    const balance = total != null ? Math.max(total - paid, 0) : null;
+    const status  = (total != null && total > 0 && paid >= total) ? 'Paid' : (paid > 0 ? 'Partial' : 'Unpaid');
+
+    document.getElementById('resAmountTotal').textContent   = (s.amountToPay && s.amountToPay !== 'N/A') ? s.amountToPay : 'N/A';
+    document.getElementById('resAmountPaid').textContent    = fmtMoney(paid);
+    document.getElementById('resAmountBalance').textContent = balance != null ? fmtMoney(balance) : 'N/A';
+
+    const pill = document.getElementById('resPaymentStatus');
+    pill.textContent = status;
+    pill.className = 'amount-status-pill ' + status.toLowerCase();
+
+    const noteEl = document.getElementById('resPaymentNote');
+    if (s.paymentNote && s.paymentNote.trim()) {
+      noteEl.textContent = s.paymentNote;
+      noteEl.classList.remove('empty');
+    } else {
+      noteEl.textContent = 'No note has been added for this shipment yet.';
+      noteEl.classList.add('empty');
+    }
+  }
+
+  let mapReqToken = 0;
+  async function renderDestinationMap(s) {
+    const myToken = ++mapReqToken;
+    const label   = document.getElementById('resDestMapLabel');
+    const frame   = document.getElementById('destMapIframe');
+    const loading = document.getElementById('destMapLoading');
+
+    label.textContent = s.destination || '—';
+    frame.style.display = 'none';
+    frame.removeAttribute('src');
+    loading.style.display = 'flex';
+    loading.textContent = 'Loading map…';
+
+    if (!s.destination) { loading.textContent = 'No destination on file.'; return; }
+
+    try {
+      const q = encodeURIComponent(s.destination);
+      const r = await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q=' + q);
+      const results = await r.json();
+      if (myToken !== mapReqToken) return; // a newer lookup superseded this one
+      if (!results || !results.length) { loading.textContent = 'Map unavailable for this location.'; return; }
+
+      const lat = parseFloat(results[0].lat), lon = parseFloat(results[0].lon);
+      const d = 5; // bbox half-width in degrees — roughly country-level view
+      const bbox = [lon - d, lat - d, lon + d, lat + d].join('%2C');
+      frame.onload = () => { loading.style.display = 'none'; frame.style.display = 'block'; };
+      frame.src = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat}%2C${lon}`;
+    } catch (e) {
+      if (myToken === mapReqToken) loading.textContent = 'Map unavailable right now.';
+    }
   }
 
   document.getElementById('trackingInput').addEventListener('keydown', e => {
