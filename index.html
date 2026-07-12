@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Site Under Maintenance - Atlas Express Logistics</title>
+<title>Site Under Maintenance - Apex Express Logistics</title>
 <style>
     * {
     margin: 0;
@@ -16,124 +16,91 @@
     background: linear-gradient(135deg, #0A2540 0%, #1E3A5F 50%, #D4AF37 100%);
     min-height: 100vh;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
+    overflow: hidden;
     color: #fff;
-    padding: 20px;
   }
 
- .card {
+  /* Animated background blobs */
+  .blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.4;
+    animation: float 8s ease-in-out infinite;
+  }
+  .blob1 { width: 400px; height: 400px; background: #D4AF37; top: -100px; left: -100px; }
+  .blob2 { width: 300px; height: 300px; background: #0A2540; bottom: -80px; right: -80px; animation-delay: 2s; }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px) scale(1); }
+    50% { transform: translateY(-30px) scale(1.05); }
+  }
+
+  /* Glass Card */
+  .card {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 24px;
-    padding: 40px 30px;
+    padding: 50px 40px;
     text-align: center;
-    max-width: 550px;
+    max-width: 500px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    margin-bottom: 25px;
+    z-index: 10;
   }
 
- .icon { font-size: 50px; margin-bottom: 15px; animation: spin 3s linear infinite; }
-  @keyframes spin { 100% { transform: rotate(360deg); } }
-
-  h1 { font-size: 2rem; margin-bottom: 12px; }
-  p { font-size: 1.05rem; color: rgba(255, 255, 255, 0.9); margin-bottom: 8px; }
- .highlight { color: #D4AF37; font-weight: 600; }
-
-  /* Game Area */
- .game-box {
-    background: rgba(0,0,0,0.3);
-    border-radius: 16px;
-    padding: 20px;
-    backdrop-filter: blur(10px);
+  .icon {
+    font-size: 60px;
+    margin-bottom: 20px;
+    animation: spin 3s linear infinite;
   }
- .game-box h2 { font-size: 1.2rem; margin-bottom: 10px; color: #D4AF37; }
-  canvas {
-    background: #111;
-    border: 2px solid #D4AF37;
-    border-radius: 12px;
-    display: block;
-    margin: 0 auto;
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
   }
- .controls { font-size: 0.9rem; margin-top: 8px; color: rgba(255,255,255,0.8); }
+
+  h1 {
+    font-size: 2.2rem;
+    margin-bottom: 15px;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 10px;
+  }
+
+  .highlight {
+    color: #D4AF37;
+    font-weight: 600;
+  }
+
+  .footer {
+    margin-top: 30px;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+  }
 </style>
 </head>
 <body>
+  <div class="blob blob1"></div>
+  <div class="blob blob2"></div>
 
   <div class="card">
     <div class="icon">⚙️</div>
     <h1>Site Maintenance</h1>
     <p>Kindly exercise patience, <span class="highlight">we shall be back soon</span>.</p>
     <p>Our engineers are working on it to serve you better.</p>
-    <p><span class="highlight">You can play this while waiting</span> 👇</p>
+    <div class="footer">
+      Atlas Express Logistics
+    </div>
   </div>
-
-  <div class="game-box">
-    <h2>🐍 Snake Game</h2>
-    <canvas id="game" width="400" height="400"></canvas>
-    <div class="controls">Use Arrow Keys or WASD to play</div>
-  </div>
-
-<script>
-const canvas = document.getElementById('game');
-const ctx = canvas.getContext('2d');
-const grid = 20;
-let snake = [{x: 160, y: 160}];
-let dx = grid, dy = 0;
-let food = {x: 200, y: 200};
-let score = 0;
-
-function randomFood() {
-  food.x = Math.floor(Math.random() * 20) * grid;
-  food.y = Math.floor(Math.random() * 20) * grid;
-}
-
-function draw() {
-  ctx.fillStyle = '#111';
-  ctx.fillRect(0, 0, 400, 400);
-
-  // Draw food
-  ctx.fillStyle = '#D4AF37';
-  ctx.fillRect(food.x, food.y, grid-2, grid-2);
-
-  // Draw snake
-  ctx.fillStyle = '#00FF88';
-  snake.forEach(part => ctx.fillRect(part.x, part.y, grid-2, grid-2));
-
-  // Move snake
-  let head = {x: snake[0].x + dx, y: snake[0].y + dy};
-
-  // Wall collision
-  if(head.x < 0 || head.y < 0 || head.x >= 400 || head.y >= 400) {
-    snake = [{x: 160, y: 160}]; dx = grid; dy = 0; return;
-  }
-
-  // Self collision
-  if(snake.some(part => part.x === head.x && part.y === head.y)) {
-    snake = [{x: 160, y: 160}]; dx = grid; dy = 0; return;
-  }
-
-  snake.unshift(head);
-
-  // Eat food
-  if(head.x === food.x && head.y === food.y) {
-    randomFood();
-  } else {
-    snake.pop();
-  }
-}
-
-document.addEventListener('keydown', e => {
-  if(['ArrowUp','w','W'].includes(e.key) && dy === 0){dx=0; dy=-grid;}
-  if(['ArrowDown','s','S'].includes(e.key) && dy === 0){dx=0; dy=grid;}
-  if(['ArrowLeft','a','A'].includes(e.key) && dx === 0){dx=-grid; dy=0;}
-  if(['ArrowRight','d','D'].includes(e.key) && dx === 0){dx=grid; dy=0;}
-});
-
-setInterval(draw, 100);
-</script>
-
 </body>
 </html>
