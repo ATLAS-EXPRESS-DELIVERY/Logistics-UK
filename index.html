@@ -3,437 +3,261 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>In Transit — Apex Express Logistics</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<title>Site Under Maintenance - Apex Express Logistics</title>
 <style>
-  :root{
-    --navy-deep:#0B1E33;
-    --navy-mid:#16324F;
-    --steel:#2A4A63;
-    --brass:#C9A227;
-    --brass-light:#E3C567;
-    --paper:#F5F3EA;
-    --ink:#1B2A38;
-    --ink-soft:#4A5A68;
-    --teal:#3E6E71;
+    * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   }
 
-  *{margin:0;padding:0;box-sizing:border-box;}
-
-  html,body{height:100%;}
-
-  body{
-    font-family:'IBM Plex Sans', sans-serif;
-    background:
-      radial-gradient(circle at 15% 20%, rgba(201,162,39,0.08), transparent 45%),
-      radial-gradient(circle at 85% 80%, rgba(62,110,113,0.10), transparent 50%),
-      linear-gradient(160deg, var(--navy-deep) 0%, var(--navy-mid) 55%, var(--steel) 100%);
-    color:var(--paper);
-    min-height:100vh;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    overflow:hidden;
-    position:relative;
-    padding:24px;
+  body {
+    background: linear-gradient(135deg, #0A2540 0%, #1E3A5F 50%, #D4AF37 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    color: #fff;
   }
 
-  /* faint dispatch grid */
-  .grid-overlay{
-    position:absolute;
-    inset:0;
-    background-image:
-      linear-gradient(rgba(245,243,234,0.035) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(245,243,234,0.035) 1px, transparent 1px);
-    background-size:48px 48px;
-    pointer-events:none;
+  /* Animated background blobs */
+  .blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.4;
+    animation: float 8s ease-in-out infinite;
+  }
+  .blob1 { width: 400px; height: 400px; background: #D4AF37; top: -100px; left: -100px; }
+  .blob2 { width: 300px; height: 300px; background: #0A2540; bottom: -80px; right: -80px; animation-delay: 2s; }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px) scale(1); }
+    50% { transform: translateY(-30px) scale(1.05); }
   }
 
-  /* animated route path */
-  .route-layer{
-    position:absolute;
-    inset:0;
-    pointer-events:none;
-    opacity:0.5;
-  }
-  .route-layer svg{width:100%;height:100%;}
-  .route-path{
-    fill:none;
-    stroke:var(--brass);
-    stroke-width:1.5;
-    stroke-dasharray:6 10;
-    opacity:0.35;
-    animation:dashFlow 6s linear infinite;
-  }
-  @keyframes dashFlow{ to{ stroke-dashoffset:-160; } }
-  .route-dot{
-    fill:var(--brass-light);
-    filter:drop-shadow(0 0 6px rgba(227,197,103,0.9));
-    offset-path:path('M -50 620 C 200 500, 400 700, 650 420 S 1100 250, 1450 480');
-    animation:travel 9s ease-in-out infinite;
-  }
-  @keyframes travel{
-    0%{ offset-distance:0%; opacity:0; }
-    8%{ opacity:1; }
-    92%{ opacity:1; }
-    100%{ offset-distance:100%; opacity:0; }
+  /* Glass Card */
+  .card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 24px;
+    padding: 50px 40px;
+    text-align: center;
+    max-width: 520px;
+    width: 90%;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    z-index: 10;
+    animation: cardIn 0.8s ease-out both;
   }
 
-  /* the waybill card */
-  .waybill-wrap{
-    position:relative;
-    z-index:2;
-    animation:riseIn 0.9s cubic-bezier(.2,.8,.2,1) both;
-  }
-  @keyframes riseIn{
-    from{ opacity:0; transform:translateY(28px) rotate(0deg); }
-    to{ opacity:1; transform:translateY(0) rotate(-0.6deg); }
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(24px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
   }
 
-  .waybill{
-    position:relative;
-    width:min(560px, 90vw);
-    background:var(--paper);
-    color:var(--ink);
-    border-radius:6px;
-    padding:38px 40px 32px;
-    box-shadow:
-      0 30px 60px rgba(0,0,0,0.45),
-      0 2px 0 rgba(0,0,0,0.05) inset;
-    transform:rotate(-0.6deg);
+  .icon {
+    font-size: 60px;
+    margin-bottom: 20px;
+    animation: spin 3s linear infinite;
+    display: inline-block;
   }
 
-  /* perforated top edge */
-  .waybill::before{
-    content:'';
-    position:absolute;
-    top:-1px; left:0; right:0; height:16px;
-    background-image:radial-gradient(circle, transparent 7px, var(--navy-mid) 7.5px);
-    background-size:22px 16px;
-    background-position:6px center;
-    border-top-left-radius:6px;
-    border-top-right-radius:6px;
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
   }
 
-  .stub-row{
-    display:flex;
-    justify-content:space-between;
-    align-items:flex-start;
-    border-bottom:1.5px dashed rgba(27,42,56,0.25);
-    padding-bottom:16px;
-    margin-bottom:22px;
+  h1 {
+    font-size: 2.2rem;
+    margin-bottom: 15px;
+    font-weight: 700;
+    color: #fff;
   }
 
-  .brand{
-    display:flex;
-    flex-direction:column;
-    gap:2px;
-  }
-  .brand-mark{
-    font-family:'Oswald', sans-serif;
-    font-weight:700;
-    font-size:1.15rem;
-    letter-spacing:0.04em;
-    color:var(--ink);
-  }
-  .brand-sub{
-    font-family:'IBM Plex Mono', monospace;
-    font-size:0.68rem;
-    letter-spacing:0.14em;
-    text-transform:uppercase;
-    color:var(--ink-soft);
+  p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 10px;
   }
 
-  .barcode{
-    width:118px;
-    height:34px;
-    background-image:repeating-linear-gradient(
-      90deg,
-      var(--ink) 0px, var(--ink) 2px,
-      transparent 2px, transparent 5px,
-      var(--ink) 5px, var(--ink) 6px,
-      transparent 6px, transparent 10px,
-      var(--ink) 10px, var(--ink) 13px,
-      transparent 13px, transparent 16px,
-      var(--ink) 16px, var(--ink) 17px,
-      transparent 17px, transparent 21px
-    );
-    margin-bottom:4px;
-  }
-  .tracking-id{
-    font-family:'IBM Plex Mono', monospace;
-    font-size:0.66rem;
-    letter-spacing:0.08em;
-    color:var(--ink-soft);
-    text-align:right;
+  .highlight {
+    color: #D4AF37;
+    font-weight: 600;
   }
 
-  .stamp{
-    position:absolute;
-    top:26px;
-    right:34px;
-    border:2px solid var(--teal);
-    color:var(--teal);
-    border-radius:50%;
-    width:88px;
-    height:88px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    text-align:center;
-    font-family:'Oswald', sans-serif;
-    font-weight:600;
-    font-size:0.72rem;
-    letter-spacing:0.06em;
-    line-height:1.15;
-    transform:rotate(12deg);
-    opacity:0.85;
-    text-transform:uppercase;
+  /* New: live clock */
+  .clock-row {
+    margin-top: 24px;
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
   }
 
-  .eyebrow{
-    font-family:'IBM Plex Mono', monospace;
-    font-size:0.72rem;
-    letter-spacing:0.18em;
-    text-transform:uppercase;
-    color:var(--teal);
-    margin-bottom:10px;
+  .clock-box {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    padding: 10px 18px;
+    min-width: 150px;
   }
 
-  h1{
-    font-family:'Oswald', sans-serif;
-    font-weight:700;
-    font-size:clamp(2rem, 5vw, 2.6rem);
-    line-height:1.08;
-    letter-spacing:0.01em;
-    color:var(--ink);
-    margin-bottom:14px;
-    max-width:9.5em;
+  .clock-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 4px;
   }
 
-  .desc{
-    font-size:0.98rem;
-    line-height:1.6;
-    color:var(--ink-soft);
-    max-width:42ch;
-    margin-bottom:26px;
-  }
-  .desc strong{ color:var(--ink); font-weight:600; }
-
-  .divider{
-    border-top:1.5px dashed rgba(27,42,56,0.25);
-    margin:0 -6px 24px;
+  .clock-value {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: #fff;
+    font-variant-numeric: tabular-nums;
   }
 
-  .status-grid{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:18px;
-    margin-bottom:22px;
+  /* New: countdown */
+  .countdown-wrap {
+    margin-top: 22px;
   }
 
-  .status-box{
-    background:rgba(27,42,56,0.04);
-    border:1px solid rgba(27,42,56,0.1);
-    border-radius:6px;
-    padding:14px 16px;
+  .countdown-value {
+    font-size: 2.6rem;
+    font-weight: 700;
+    color: #D4AF37;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.03em;
   }
 
-  .status-label{
-    font-family:'IBM Plex Mono', monospace;
-    font-size:0.62rem;
-    letter-spacing:0.12em;
-    text-transform:uppercase;
-    color:var(--ink-soft);
-    margin-bottom:6px;
+  .countdown-caption {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-top: 4px;
   }
 
-  .status-value{
-    font-family:'IBM Plex Mono', monospace;
-    font-size:1.5rem;
-    font-weight:600;
-    color:var(--ink);
-    font-variant-numeric:tabular-nums;
-    letter-spacing:0.02em;
+  .progress-track {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 16px;
   }
 
-  .status-sub{
-    font-family:'IBM Plex Mono', monospace;
-    font-size:0.72rem;
-    color:var(--ink-soft);
-    margin-top:2px;
+  .progress-fill {
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(90deg, #D4AF37, #fff8dc);
+    border-radius: 4px;
+    transition: width 1s linear;
   }
 
-  .gauge{
-    width:100%;
-    height:6px;
-    background:rgba(27,42,56,0.12);
-    border-radius:4px;
-    overflow:hidden;
-    margin-top:20px;
-  }
-  .gauge-fill{
-    height:100%;
-    width:100%;
-    background:linear-gradient(90deg, var(--teal), var(--brass));
-    border-radius:4px;
-    transition:width 1s linear;
-  }
-  .gauge-fill.pulse{
-    animation:pulseFlash 0.6s ease-out;
-  }
-  @keyframes pulseFlash{
-    0%{ filter:brightness(1); }
-    40%{ filter:brightness(1.7); }
-    100%{ filter:brightness(1); }
+  .progress-fill.pulse {
+    animation: pulseFlash 0.6s ease-out;
   }
 
-  .footer-row{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-top:26px;
+  @keyframes pulseFlash {
+    0% { filter: brightness(1); }
+    40% { filter: brightness(1.8); }
+    100% { filter: brightness(1); }
   }
 
-  .footer-note{
-    font-size:0.82rem;
-    color:var(--ink-soft);
-    line-height:1.5;
-    max-width:30ch;
+  .footer {
+    margin-top: 30px;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
   }
 
-  .signature{
-    font-family:'Oswald', sans-serif;
-    font-size:0.78rem;
-    letter-spacing:0.08em;
-    color:var(--ink);
-    text-transform:uppercase;
-    text-align:right;
-  }
-  .signature span{
-    display:block;
-    font-family:'IBM Plex Mono', monospace;
-    font-size:0.62rem;
-    letter-spacing:0.1em;
-    color:var(--ink-soft);
-    text-transform:none;
-    margin-top:2px;
+  @media (max-width: 480px) {
+    h1 { font-size: 1.7rem; }
+    .countdown-value { font-size: 2rem; }
+    .clock-box { min-width: 130px; }
   }
 
-  @media (max-width:480px){
-    .waybill{ padding:30px 22px 26px; }
-    .status-grid{ grid-template-columns:1fr; }
-    .stamp{ width:70px; height:70px; font-size:0.62rem; right:20px; top:20px; }
-    .footer-row{ flex-direction:column; align-items:flex-start; gap:10px; }
-    .signature{ text-align:left; }
-  }
-
-  @media (prefers-reduced-motion: reduce){
-    .waybill-wrap{ animation:none; }
-    .route-path, .route-dot{ animation:none; opacity:0.15; }
+  @media (prefers-reduced-motion: reduce) {
+    .blob { animation: none; }
+    .icon { animation: none; }
+    .card { animation: none; }
   }
 </style>
 </head>
 <body>
+  <div class="blob blob1"></div>
+  <div class="blob blob2"></div>
 
-  <div class="grid-overlay"></div>
+  <div class="card">
+    <div class="icon">⚙️</div>
+    <h1>Site Maintenance</h1>
+    <p>Kindly exercise patience, <span class="highlight">we shall be back soon</span>.</p>
+    <p>Our engineers are working on it to serve you better.</p>
 
-  <div class="route-layer" aria-hidden="true">
-    <svg viewBox="0 0 1440 900" preserveAspectRatio="none">
-      <path class="route-path" d="M -50 620 C 200 500, 400 700, 650 420 S 1100 250, 1450 480"></path>
-      <circle class="route-dot" r="4"></circle>
-    </svg>
-  </div>
+    <div class="countdown-wrap">
+      <div class="countdown-value" id="countdown">30:00</div>
+      <div class="countdown-caption">Estimated time remaining — resets automatically if we're still working</div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    </div>
 
-  <div class="waybill-wrap">
-    <div class="waybill">
-      <div class="stamp">In<br>Transit</div>
-
-      <div class="stub-row">
-        <div class="brand">
-          <div class="brand-mark">Apex Express Logistics</div>
-          <div class="brand-sub">Network Operations</div>
-        </div>
-        <div>
-          <div class="barcode" aria-hidden="true"></div>
-          <div class="tracking-id">AXL-4471-0713</div>
-        </div>
+    <div class="clock-row">
+      <div class="clock-box">
+        <div class="clock-label">Current Time</div>
+        <div class="clock-value" id="clock">--:--:--</div>
       </div>
-
-      <div class="eyebrow">Shipment Status Update</div>
-      <h1>Your site is currently in transit.</h1>
-      <p class="desc">
-        We're moving some freight behind the scenes — <strong>upgrading systems to serve you better.</strong>
-        This waybill will auto-update the moment the route reopens. No action needed on your end.
-      </p>
-
-      <div class="divider"></div>
-
-      <div class="status-grid">
-        <div class="status-box">
-          <div class="status-label">Estimated Arrival</div>
-          <div class="status-value" id="countdown">30:00</div>
-          <div class="status-sub">Cycle resets if crew is still on site</div>
-        </div>
-        <div class="status-box">
-          <div class="status-label">Dispatch Time</div>
-          <div class="status-value" id="clock">--:--:--</div>
-          <div class="status-sub" id="dateline">Loading date…</div>
-        </div>
+      <div class="clock-box">
+        <div class="clock-label">Date</div>
+        <div class="clock-value" id="dateline">Loading…</div>
       </div>
+    </div>
 
-      <div class="gauge"><div class="gauge-fill" id="gaugeFill"></div></div>
-
-      <div class="footer-row">
-        <div class="footer-note">Our engineers are on route and working to restore full service.</div>
-        <div class="signature">Apex Express<span>Operations Desk</span></div>
-      </div>
+    <div class="footer">
+      ATLAS EXPRESS SERVICE 
     </div>
   </div>
 
 <script>
-  // ---- Live clock + date ----
+  // Live clock + date
   const clockEl = document.getElementById('clock');
   const dateEl = document.getElementById('dateline');
 
-  function updateClock(){
+  function updateClock() {
     const now = new Date();
-    const hh = String(now.getHours()).padStart(2,'0');
-    const mm = String(now.getMinutes()).padStart(2,'0');
-    const ss = String(now.getSeconds()).padStart(2,'0');
+    const hh = String(now.getHours()).padStart(2, '0');
+    const mm = String(now.getMinutes()).padStart(2, '0');
+    const ss = String(now.getSeconds()).padStart(2, '0');
     clockEl.textContent = `${hh}:${mm}:${ss}`;
 
-    const dateStr = now.toLocaleDateString(undefined, {
-      weekday:'short', year:'numeric', month:'short', day:'numeric'
+    dateEl.textContent = now.toLocaleDateString(undefined, {
+      weekday: 'short', month: 'short', day: 'numeric'
     });
-    dateEl.textContent = dateStr;
   }
   updateClock();
   setInterval(updateClock, 1000);
 
-  // ---- Looping 30-minute countdown ----
+  // Looping 30-minute countdown
   const TOTAL_SECONDS = 30 * 60;
   let remaining = TOTAL_SECONDS;
   const countdownEl = document.getElementById('countdown');
-  const gaugeFill = document.getElementById('gaugeFill');
+  const progressFill = document.getElementById('progressFill');
 
-  function renderCountdown(){
-    const m = String(Math.floor(remaining / 60)).padStart(2,'0');
-    const s = String(remaining % 60).padStart(2,'0');
+  function renderCountdown() {
+    const m = String(Math.floor(remaining / 60)).padStart(2, '0');
+    const s = String(remaining % 60).padStart(2, '0');
     countdownEl.textContent = `${m}:${s}`;
-    const pct = (remaining / TOTAL_SECONDS) * 100;
-    gaugeFill.style.width = pct + '%';
+    progressFill.style.width = (remaining / TOTAL_SECONDS) * 100 + '%';
   }
 
-  function tick(){
+  function tick() {
     remaining -= 1;
-    if(remaining < 0){
+    if (remaining < 0) {
       remaining = TOTAL_SECONDS;
-      gaugeFill.classList.remove('pulse');
-      void gaugeFill.offsetWidth; // restart animation
-      gaugeFill.classList.add('pulse');
+      progressFill.classList.remove('pulse');
+      void progressFill.offsetWidth;
+      progressFill.classList.add('pulse');
     }
     renderCountdown();
   }
@@ -441,6 +265,5 @@
   renderCountdown();
   setInterval(tick, 1000);
 </script>
-
 </body>
 </html>
